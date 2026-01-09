@@ -6,6 +6,7 @@
     <link rel="icon" type="image/png" href="../utils/logo.png">
     <title>Spell Sheet - D&D 5e</title>
     <link rel="stylesheet" href="spell_sheet_style.css">
+    <link rel="stylesheet" href="spell_sheet_regras_style.css">
 </head>
 <body>
     <!-- LIVRO FECHADO -->
@@ -45,6 +46,7 @@
             </div>
             <div class="acoes">
                 <button class="btn btn-adicionar" id="btnAdicionar">+ Adicionar Magia</button>
+                <button class="btn btn-regras" id="btnRegras">📖 Regras de Magia</button>
                 <a href="index.html" style="text-decoration: none;">
                     <button class="btn btn-grimorio">📖 Voltar ao Grimório</button>
                 </a>
@@ -170,6 +172,33 @@
                 <button class="btn btn-salvar" id="btnSalvarSelecionadas">
                     Adicionar Selecionadas (<span id="contadorSelecionadas">0</span>)
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Regras -->
+    <div class="modal" id="modalRegras">
+        <div class="modal-conteudo-grande modal-regras">
+            <div class="modal-header">
+                <h2 class="modal-titulo">📖 Manual de Regras de Magia</h2>
+                <button class="btn-fechar-modal" id="btnFecharModalRegras">×</button>
+            </div>
+            
+            <div class="regras-conteudo" id="regrasConteudo">
+                <p class="loading-msg">Carregando regras...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Regra Específica (Tooltip) -->
+    <div class="modal-tooltip" id="modalTooltip">
+        <div class="tooltip-box">
+            <div class="tooltip-header">
+                <h3 class="tooltip-titulo" id="tooltipTitulo">Regra</h3>
+                <button class="btn-fechar-tooltip" id="btnFecharTooltip">×</button>
+            </div>
+            <div class="tooltip-conteudo" id="tooltipConteudo">
+                <!-- Conteúdo dinâmico -->
             </div>
         </div>
     </div>

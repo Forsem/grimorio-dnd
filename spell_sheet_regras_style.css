@@ -1,0 +1,343 @@
+/* ========== BOTÃO DE REGRAS ========== */
+.btn-regras {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    color: #ffd700;
+    border: 2px solid #2563eb;
+}
+
+.btn-regras:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+    transform: translateY(-2px);
+}
+
+/* ========== MODAL DE REGRAS ========== */
+.modal-regras {
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.regras-conteudo {
+    padding: 30px;
+    overflow-y: auto;
+    flex: 1;
+    font-family: 'Crimson Text', serif;
+    color: #3d2817;
+    line-height: 1.8;
+}
+
+.regras-conteudo::-webkit-scrollbar {
+    width: 10px;
+}
+
+.regras-conteudo::-webkit-scrollbar-track {
+    background: rgba(107, 68, 35, 0.1);
+}
+
+.regras-conteudo::-webkit-scrollbar-thumb {
+    background: #6b4423;
+    border-radius: 5px;
+}
+
+.regra-secao {
+    background: rgba(255, 255, 255, 0.6);
+    border-left: 4px solid #1e3a8a;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.regra-titulo {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    color: #1e3a8a;
+    margin-bottom: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.regra-titulo::before {
+    content: "✦";
+    color: #d4af37;
+    font-size: 1.2rem;
+}
+
+.regra-subtitulo {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    color: #4a148c;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.regra-texto {
+    font-size: 1.05rem;
+    margin-bottom: 12px;
+    color: #3d2817;
+}
+
+.regra-lista {
+    list-style: none;
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+.regra-lista li {
+    margin-bottom: 8px;
+    position: relative;
+    padding-left: 25px;
+}
+
+.regra-lista li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: #d4af37;
+    font-weight: bold;
+}
+
+.regra-destaque {
+    background: rgba(30, 58, 138, 0.1);
+    border-left: 3px solid #1e3a8a;
+    padding: 12px 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+    font-style: italic;
+    color: #1e3a8a;
+}
+
+.regra-formula {
+    background: rgba(212, 175, 55, 0.15);
+    border: 2px solid #d4af37;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    color: #3d2817;
+    text-align: center;
+    font-weight: 600;
+}
+
+.regra-exemplo {
+    background: rgba(45, 139, 26, 0.1);
+    border-left: 3px solid #2d8b1a;
+    padding: 12px 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.regra-exemplo::before {
+    content: "💡 Exemplo: ";
+    font-weight: 700;
+    color: #2d8b1a;
+}
+
+/* ========== MODAL TOOLTIP (ACESSO RÁPIDO) ========== */
+.modal-tooltip {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    z-index: 1500;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-tooltip.ativo {
+    display: flex;
+}
+
+.tooltip-box {
+    background: linear-gradient(135deg, #f8f4e6 0%, #fff9e6 100%);
+    border: 3px solid #1e3a8a;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 70vh;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        0 0 80px rgba(30, 58, 138, 0.3);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.tooltip-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    padding: 20px 25px;
+    border-radius: 9px 9px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tooltip-titulo {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    color: #ffd700;
+    margin: 0;
+    font-weight: 700;
+}
+
+.btn-fechar-tooltip {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #ffd700;
+    font-size: 1.8rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-family: Arial, sans-serif;
+    line-height: 1;
+    padding: 0;
+}
+
+.btn-fechar-tooltip:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.tooltip-conteudo {
+    padding: 25px;
+    overflow-y: auto;
+    flex: 1;
+    font-family: 'Crimson Text', serif;
+    color: #3d2817;
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+
+.tooltip-conteudo::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tooltip-conteudo::-webkit-scrollbar-track {
+    background: rgba(107, 68, 35, 0.1);
+}
+
+.tooltip-conteudo::-webkit-scrollbar-thumb {
+    background: #6b4423;
+    border-radius: 4px;
+}
+
+.tooltip-secao {
+    margin-bottom: 15px;
+}
+
+.tooltip-subtitulo {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: #1e3a8a;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.tooltip-lista {
+    list-style: none;
+    padding-left: 15px;
+    margin: 8px 0;
+}
+
+.tooltip-lista li {
+    margin-bottom: 6px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.tooltip-lista li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #d4af37;
+    font-weight: bold;
+}
+
+.tooltip-destaque {
+    background: rgba(30, 58, 138, 0.1);
+    border-left: 3px solid #1e3a8a;
+    padding: 10px 12px;
+    margin: 10px 0;
+    border-radius: 4px;
+    font-style: italic;
+}
+
+/* ========== INDICADOR DE CLIQUE (NOS CARDS) ========== */
+.magia-info-item {
+    cursor: help;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.magia-info-item:hover {
+    background: rgba(30, 58, 138, 0.08);
+    border-radius: 4px;
+    transform: translateX(3px);
+}
+
+.magia-info-item::after {
+    content: "ℹ️";
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    font-size: 0.9rem;
+    transition: opacity 0.3s ease;
+}
+
+.magia-info-item:hover::after {
+    opacity: 0.6;
+}
+
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 768px) {
+    .tooltip-box {
+        width: 95%;
+        max-height: 80vh;
+    }
+    
+    .tooltip-titulo {
+        font-size: 1.2rem;
+    }
+    
+    .tooltip-conteudo {
+        padding: 20px;
+        font-size: 1rem;
+    }
+    
+    .regras-conteudo {
+        padding: 20px;
+    }
+    
+    .regra-titulo {
+        font-size: 1.3rem;
+    }
+}

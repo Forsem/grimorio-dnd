@@ -1,0 +1,90 @@
+{
+  "manual_magia": {
+    "espacos_de_magia": {
+      "titulo": "Espaços de Magia",
+      "descricao": "Recurso limitado que representa a energia física e mental gasta ao canalizar a Trama.",
+      "regras": {
+        "limite": "Baseado na tabela de nível da classe (exceto Bruxo).",
+        "uso": "Gasta-se um espaço do nível da magia ou superior.",
+        "recuperacao": "Descanso Longo restaura todos os espaços.",
+        "excecoes": "Habilidades especiais (ex: Monge 4 Elementos ou Invocações) podem ignorar o gasto."
+      }
+    },
+    "conjuracao": {
+      "titulo": "Conjurando uma Magia",
+      "tempos_de_conjuracao": {
+        "acao_simples": "1 ação (padrão).",
+        "acao_bonus": {
+          "regra": "Especialmente veloz.",
+          "restricao": "Se conjurar uma magia de ação bônus, só pode conjurar outra no turno se for um truque de 1 ação."
+        },
+        "reacoes": "Conjurada instantaneamente em resposta a um gatilho específico.",
+        "rituais_e_tempos_maiores": {
+          "exigencia": "Gasta ação em cada turno e exige concentração.",
+          "falha": "Se a concentração quebrar, a magia falha, mas o espaço não é gasto."
+        }
+      }
+    },
+    "componentes": {
+      "titulo": "Componentes",
+      "tipos": {
+        "verbal": {
+          "sigla": "V",
+          "acao": "Exige a entoação de palavras místicas. A combinação de sons, timbre e entonação põe o filamento da magia em ação.",
+          "impedimento": "Personagens amordaçados ou em áreas de silêncio (como a magia Silêncio) não podem conjurar."
+        },
+        "somatico": {
+          "sigla": "S",
+          "acao": "Inclui uma forte gesticulação ou um intricado conjunto de gestos.",
+          "requisito": "É necessário ter livre ao menos uma das mãos para executar esses gestos."
+        },
+        "material": {
+          "sigla": "M",
+          "acao": "Uso de objetos específicos para canalizar a magia.",
+          "foco_ou_bolsa": "Substituem itens sem custo monetário.",
+          "custo_ouro": "Se houver valor, o item é obrigatório.",
+          "consumo": "Se consome, é necessário novo item a cada uso.",
+          "uso_maos": "A mão do material pode ser a mesma usada para o componente somático."
+        }
+      }
+    },
+    "duracao": {
+      "titulo": "Duração",
+      "instantanea": "Efeito imediato que não pode ser dissipado.",
+      "concentracao": {
+        "perda_de_concentracao": {
+          "nova_magia": "Conjurar outra magia que exija concentração.",
+          "sofrer_dano": "Teste de Resistência de Constituição (CD 10 ou metade do dano).",
+          "estado": "Incapacitado ou morto.",
+          "voluntario": "Pode ser encerrada a qualquer momento."
+        }
+      }
+    },
+    "mecanicas_de_acerto": {
+      "testes_de_resistencia": {
+        "titulo": "Testes de Resistência (Saving Throws)",
+        "uso": "O alvo tenta evitar parte ou todo o efeito.",
+        "formula_cd": "8 + modificador_habilidade + bonus_proficiencia + modificadores_especiais",
+        "resultado": "A magia especifica o que ocorre no sucesso ou falha."
+      },
+      "jogadas_de_ataque": {
+        "titulo": "Jogadas de Ataque Mágico",
+        "formula_ataque": "modificador_habilidade + bonus_proficiencia",
+        "distancia_e_desvantagem": {
+          "regra": "Desvantagem em ataques à distância se houver inimigo hostil a 1,5 metro.",
+          "excecao": "Inimigos incapacitados ou que não podem ver o conjurador."
+        }
+      }
+    },
+    "regras_especiais": {
+      "combinando_efeitos": {
+        "titulo": "Combinando Efeitos Mágicos",
+        "magias_diferentes": "Os efeitos se somam enquanto as durações coexistirem.",
+        "magias_iguais": {
+          "regra": "Os efeitos NÃO se somam.",
+          "aplicacao": "Aplica-se apenas o efeito mais potente (ex: bônus mais alto) enquanto as durações se sobreporem."
+        }
+      }
+    }
+  }
+}

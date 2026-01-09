@@ -4,6 +4,7 @@ let magiasFiltradas = [];
 let todasMagiasDisponiveis = []; // Todas as magias do JSON
 let listaPorClasse = {}; // Lista de magias por classe
 let magiasSelecionadasModal = []; // Magias marcadas no modal para adicionar
+let regras = null; // Regras de magia do JSON
 
 let personagem = {
     nome: '',
@@ -16,8 +17,13 @@ const livroFechado = document.getElementById('livroFechado');
 const livroAberto = document.getElementById('livroAberto');
 const btnFechar = document.getElementById('btnFechar');
 const btnAdicionar = document.getElementById('btnAdicionar');
+const btnRegras = document.getElementById('btnRegras');
 const modal = document.getElementById('modal');
+const modalRegras = document.getElementById('modalRegras');
+const modalTooltip = document.getElementById('modalTooltip');
 const btnFecharModal = document.getElementById('btnFecharModal');
+const btnFecharModalRegras = document.getElementById('btnFecharModalRegras');
+const btnFecharTooltip = document.getElementById('btnFecharTooltip');
 const btnCancelar = document.getElementById('btnCancelar');
 const btnSalvarSelecionadas = document.getElementById('btnSalvarSelecionadas');
 const magiasGrid = document.getElementById('magiasGrid');
@@ -27,6 +33,9 @@ const filtroEscola = document.getElementById('filtroEscola');
 const nomePersonagem = document.getElementById('nomePersonagem');
 const classePersonagem = document.getElementById('classePersonagem');
 const nivelPersonagem = document.getElementById('nivelPersonagem');
+const regrasConteudo = document.getElementById('regrasConteudo');
+const tooltipTitulo = document.getElementById('tooltipTitulo');
+const tooltipConteudo = document.getElementById('tooltipConteudo');
 
 // Elementos do modal
 const magiasDisponiveis = document.getElementById('magiasDisponiveis');
@@ -39,15 +48,19 @@ const contadorSelecionadas = document.getElementById('contadorSelecionadas');
 // ========== CARREGAR JSONs ==========
 async function carregarDados() {
     try {
-        const [resLista, resDetalhes] = await Promise.all([
+        const [resLista, resDetalhes, resRegras] = await Promise.all([
             fetch('lista_magias_dnd.json'),
-            fetch('magias_dnd.json')
+            fetch('magias_dnd.json'),
+            fetch('regras_magia.json')
         ]);
         
         listaPorClasse = await resLista.json();
         todasMagiasDisponiveis = await resDetalhes.json();
+        const regrasData = await resRegras.json();
+        regras = regrasData.manual_magia;
         
         console.log('Dados carregados:', todasMagiasDisponiveis.length, 'magias disponíveis');
+        console.log('Regras carregadas:', regras);
     } catch (err) {
         console.error("Erro ao carregar JSONs:", err);
         magiasDisponiveis.innerHTML = '<p class="erro-msg">Erro ao carregar magias. Verifique se os arquivos JSON estão no diretório correto.</p>';
@@ -148,20 +161,20 @@ function renderizarMagias() {
                 <div class="magia-nivel">${nivelTexto}</div>
                 <div class="magia-escola">${normalizarEscola(magia.escola)}</div>
                 <div class="magia-info">
-                    <div class="magia-info-item">
+                    <div class="magia-info-item" onclick="mostrarRegraTooltip('tempo')">
                         <span class="magia-info-label">Tempo</span>
                         <span class="magia-info-valor">${magia['tempo de conjuração'] || 'N/A'}</span>
                     </div>
-                    <div class="magia-info-item">
+                    <div class="magia-info-item" onclick="mostrarRegraTooltip('alcance')">
                         <span class="magia-info-label">Alcance</span>
                         <span class="magia-info-valor">${magia.alcance || 'N/A'}</span>
                     </div>
-                    <div class="magia-info-item">
+                    <div class="magia-info-item" onclick="mostrarRegraTooltip('duracao')">
                         <span class="magia-info-label">Duração</span>
                         <span class="magia-info-valor">${magia.duração || 'N/A'}</span>
                     </div>
                     ${magia.componentes ? `
-                    <div class="magia-info-item">
+                    <div class="magia-info-item" onclick="mostrarRegraTooltip('componentes')">
                         <span class="magia-info-label">Componentes</span>
                         <span class="magia-info-valor">${magia.componentes}</span>
                     </div>
@@ -212,65 +225,59 @@ function renderizarMagiasDisponiveis() {
     }
     
     // Filtrar por classe
-    const classeEscolhida = modalClasse.value;
-    if (classeEscolhida) {
-        const magiasClasse = new Set();
-        const niveis = Object.keys(listaPorClasse[classeEscolhida] || {});
-        
-        niveis.forEach(nivel => {
-            listaPorClasse[classeEscolhida][nivel].forEach(magia => {
-                magiasClasse.add(magia.nome.toLowerCase());
-            });
-        });
-        
+    const classeSelecionada = modalClasse.value;
+    if (classeSelecionada && listaPorClasse[classeSelecionada]) {
+        const magiasClasse = listaPorClasse[classeSelecionada];
+        const nomesMagiasClasse = Object.values(magiasClasse).flat();
         magiasParaMostrar = magiasParaMostrar.filter(m => 
-            magiasClasse.has(m.nome.toLowerCase())
+            nomesMagiasClasse.includes(m.nome)
         );
     }
     
     // Filtrar por nível
-    const nivelEscolhido = modalNivel.value;
-    if (nivelEscolhido) {
-        const nivelNum = nivelEscolhido === 'truques_nivel_0' ? 0 : parseInt(nivelEscolhido.replace('nivel_', ''));
-        magiasParaMostrar = magiasParaMostrar.filter(m => 
-            extrairNivel(m.nivel) === nivelNum
-        );
+    const nivelSelecionado = modalNivel.value;
+    if (nivelSelecionado) {
+        magiasParaMostrar = magiasParaMostrar.filter(m => {
+            const nivelMagia = extrairNivel(m.nivel);
+            if (nivelSelecionado === 'truques_nivel_0') {
+                return nivelMagia === 0;
+            }
+            const nivelNum = parseInt(nivelSelecionado.replace('nivel_', ''));
+            return nivelMagia === nivelNum;
+        });
     }
     
     // Filtrar por escola
-    const escolaEscolhida = modalEscola.value;
-    if (escolaEscolhida) {
-        magiasParaMostrar = magiasParaMostrar.filter(m => 
-            normalizarEscola(m.escola).toLowerCase() === escolaEscolhida.toLowerCase() ||
-            m.escola.toLowerCase().includes(escolaEscolhida)
-        );
+    const escolaSelecionada = modalEscola.value;
+    if (escolaSelecionada) {
+        magiasParaMostrar = magiasParaMostrar.filter(m => {
+            const escolaNormalizada = normalizarEscola(m.escola).toLowerCase();
+            return escolaNormalizada === escolaSelecionada.toLowerCase();
+        });
     }
     
-    // Ordenar alfabeticamente
-    magiasParaMostrar.sort((a, b) => a.nome.localeCompare(b.nome));
-    
+    // Renderizar
     if (magiasParaMostrar.length === 0) {
-        magiasDisponiveis.innerHTML = '<p class="mensagem-vazia">Nenhuma magia encontrada com esses filtros.</p>';
+        magiasDisponiveis.innerHTML = '<p class="loading-msg">Nenhuma magia encontrada com os filtros selecionados.</p>';
         return;
     }
     
     magiasDisponiveis.innerHTML = magiasParaMostrar.map(magia => {
         const nivel = extrairNivel(magia.nivel);
         const nivelTexto = nivel === 0 ? 'Truque' : `Nível ${nivel}`;
-        const jaSelecionada = magiasSelecionadas.some(m => m.nome === magia.nome);
-        const marcada = magiasSelecionadasModal.some(m => m.nome === magia.nome);
+        const jaAdicionada = magiasSelecionadas.some(m => m.nome === magia.nome);
+        const estaSelecionada = magiasSelecionadasModal.some(m => m.nome === magia.nome);
         
         return `
-            <div class="magia-disponivel ${jaSelecionada ? 'ja-adicionada' : ''} ${marcada ? 'selecionada' : ''}" 
-                 data-nome="${magia.nome}" 
-                 onclick="toggleSelecaoMagia('${magia.nome.replace(/'/g, "\\'")}')">
+            <div class="magia-disponivel ${jaAdicionada ? 'ja-adicionada' : ''} ${estaSelecionada ? 'selecionada' : ''}" 
+                 onclick="${!jaAdicionada ? `toggleSelecaoMagia(${JSON.stringify(magia).replace(/"/g, '&quot;')})` : ''}">
                 <div class="magia-disponivel-header">
                     <div>
                         <div class="magia-disponivel-nome">${magia.nome}</div>
                         <div class="magia-disponivel-info">${nivelTexto} • ${normalizarEscola(magia.escola)}</div>
                     </div>
                     <div class="magia-checkbox">
-                        ${jaSelecionada ? '✓ Adicionada' : (marcada ? '✓' : '')}
+                        ${jaAdicionada ? '✓ Adicionada' : (estaSelecionada ? '✓' : '')}
                     </div>
                 </div>
             </div>
@@ -278,19 +285,11 @@ function renderizarMagiasDisponiveis() {
     }).join('');
 }
 
-// ========== TOGGLE SELEÇÃO DE MAGIA ==========
-function toggleSelecaoMagia(nomeMagia) {
-    // Verifica se já está na spell sheet
-    if (magiasSelecionadas.some(m => m.nome === nomeMagia)) {
-        return; // Não permite selecionar magias já adicionadas
-    }
+// ========== TOGGLE SELEÇÃO ==========
+function toggleSelecaoMagia(magia) {
+    const index = magiasSelecionadasModal.findIndex(m => m.nome === magia.nome);
     
-    const magia = todasMagiasDisponiveis.find(m => m.nome === nomeMagia);
-    if (!magia) return;
-    
-    const index = magiasSelecionadasModal.findIndex(m => m.nome === nomeMagia);
-    
-    if (index > -1) {
+    if (index !== -1) {
         // Remove da seleção
         magiasSelecionadasModal.splice(index, 1);
     } else {
@@ -335,6 +334,294 @@ function salvarMagiasSelecionadas() {
     mostrarConfirmacao(quantidade);
 }
 
+// ========== EXIBIR REGRAS COMPLETAS ==========
+function exibirRegrasCompletas() {
+    if (!regras) {
+        regrasConteudo.innerHTML = '<p class="loading-msg">Erro ao carregar regras.</p>';
+        return;
+    }
+    
+    let html = '';
+    
+    // Espaços de Magia
+    if (regras.espacos_de_magia) {
+        const espacos = regras.espacos_de_magia;
+        html += `
+            <div class="regra-secao">
+                <h3 class="regra-titulo">${espacos.titulo}</h3>
+                <p class="regra-texto">${espacos.descricao}</p>
+                ${espacos.regras ? `
+                    <div class="regra-subtitulo">Regras:</div>
+                    <ul class="regra-lista">
+                        ${espacos.regras.limite ? `<li><strong>Limite:</strong> ${espacos.regras.limite}</li>` : ''}
+                        ${espacos.regras.uso ? `<li><strong>Uso:</strong> ${espacos.regras.uso}</li>` : ''}
+                        ${espacos.regras.recuperacao ? `<li><strong>Recuperação:</strong> ${espacos.regras.recuperacao}</li>` : ''}
+                        ${espacos.regras.excecoes ? `<li><strong>Exceções:</strong> ${espacos.regras.excecoes}</li>` : ''}
+                    </ul>
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    // Conjuração
+    if (regras.conjuracao) {
+        const conjuracao = regras.conjuracao;
+        html += `
+            <div class="regra-secao">
+                <h3 class="regra-titulo">${conjuracao.titulo}</h3>
+                ${conjuracao.tempos_de_conjuracao ? `
+                    <div class="regra-subtitulo">Tempos de Conjuração:</div>
+                    <ul class="regra-lista">
+                        ${conjuracao.tempos_de_conjuracao.acao_simples ? `<li><strong>Ação Simples:</strong> ${conjuracao.tempos_de_conjuracao.acao_simples}</li>` : ''}
+                        ${conjuracao.tempos_de_conjuracao.acao_bonus ? `
+                            <li><strong>Ação Bônus:</strong> ${conjuracao.tempos_de_conjuracao.acao_bonus.regra}
+                                <div class="regra-destaque">⚠️ Restrição: ${conjuracao.tempos_de_conjuracao.acao_bonus.restricao}</div>
+                            </li>
+                        ` : ''}
+                        ${conjuracao.tempos_de_conjuracao.reacoes ? `<li><strong>Reações:</strong> ${conjuracao.tempos_de_conjuracao.reacoes}</li>` : ''}
+                        ${conjuracao.tempos_de_conjuracao.rituais_e_tempos_maiores ? `
+                            <li><strong>Rituais e Tempos Maiores:</strong>
+                                <ul class="regra-lista">
+                                    <li>${conjuracao.tempos_de_conjuracao.rituais_e_tempos_maiores.exigencia}</li>
+                                    <li>${conjuracao.tempos_de_conjuracao.rituais_e_tempos_maiores.falha}</li>
+                                </ul>
+                            </li>
+                        ` : ''}
+                    </ul>
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    // Componentes
+    if (regras.componentes) {
+        const componentes = regras.componentes;
+        html += `
+            <div class="regra-secao">
+                <h3 class="regra-titulo">${componentes.titulo}</h3>
+                ${componentes.tipos ? `
+                    <div class="regra-subtitulo">Tipos de Componentes:</div>
+                    ${componentes.tipos.verbal ? `
+                        <p class="regra-texto"><strong>Verbal (${componentes.tipos.verbal.sigla}):</strong></p>
+                        <p class="regra-texto">${componentes.tipos.verbal.acao}</p>
+                        ${componentes.tipos.verbal.impedimento ? `<div class="regra-destaque">⚠️ Impedimento: ${componentes.tipos.verbal.impedimento}</div>` : ''}
+                    ` : ''}
+                    ${componentes.tipos.somatico ? `
+                        <p class="regra-texto" style="margin-top: 15px;"><strong>Somático (${componentes.tipos.somatico.sigla}):</strong></p>
+                        <p class="regra-texto">${componentes.tipos.somatico.acao}</p>
+                        ${componentes.tipos.somatico.requisito ? `<div class="regra-destaque">📋 ${componentes.tipos.somatico.requisito}</div>` : ''}
+                    ` : ''}
+                    ${componentes.tipos.material ? `
+                        <p class="regra-texto" style="margin-top: 15px;"><strong>Material (${componentes.tipos.material.sigla}):</strong></p>
+                        <p class="regra-texto">${componentes.tipos.material.acao}</p>
+                        <ul class="regra-lista">
+                            <li>${componentes.tipos.material.foco_ou_bolsa}</li>
+                            <li>${componentes.tipos.material.custo_ouro}</li>
+                            <li>${componentes.tipos.material.consumo}</li>
+                            <li>${componentes.tipos.material.uso_maos}</li>
+                        </ul>
+                    ` : ''}
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    // Duração
+    if (regras.duracao) {
+        const duracao = regras.duracao;
+        html += `
+            <div class="regra-secao">
+                <h3 class="regra-titulo">${duracao.titulo}</h3>
+                ${duracao.instantanea ? `<p class="regra-texto"><strong>Instantânea:</strong> ${duracao.instantanea}</p>` : ''}
+                ${duracao.concentracao ? `
+                    <div class="regra-subtitulo">Concentração - Perda:</div>
+                    <ul class="regra-lista">
+                        ${duracao.concentracao.perda_de_concentracao.nova_magia ? `<li>${duracao.concentracao.perda_de_concentracao.nova_magia}</li>` : ''}
+                        ${duracao.concentracao.perda_de_concentracao.sofrer_dano ? `<li>${duracao.concentracao.perda_de_concentracao.sofrer_dano}</li>` : ''}
+                        ${duracao.concentracao.perda_de_concentracao.estado ? `<li>${duracao.concentracao.perda_de_concentracao.estado}</li>` : ''}
+                        ${duracao.concentracao.perda_de_concentracao.voluntario ? `<li>${duracao.concentracao.perda_de_concentracao.voluntario}</li>` : ''}
+                    </ul>
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    // Mecânicas de Acerto
+    if (regras.mecanicas_de_acerto) {
+        const mecanicas = regras.mecanicas_de_acerto;
+        html += `
+            <div class="regra-secao">
+                <h3 class="regra-titulo">Mecânicas de Acerto</h3>
+                ${mecanicas.testes_de_resistencia ? `
+                    <div class="regra-subtitulo">${mecanicas.testes_de_resistencia.titulo}</div>
+                    <p class="regra-texto">${mecanicas.testes_de_resistencia.uso}</p>
+                    <div class="regra-formula">CD = ${mecanicas.testes_de_resistencia.formula_cd}</div>
+                    <p class="regra-texto">${mecanicas.testes_de_resistencia.resultado}</p>
+                ` : ''}
+                ${mecanicas.jogadas_de_ataque ? `
+                    <div class="regra-subtitulo">${mecanicas.jogadas_de_ataque.titulo}</div>
+                    <div class="regra-formula">Ataque = ${mecanicas.jogadas_de_ataque.formula_ataque}</div>
+                    ${mecanicas.jogadas_de_ataque.distancia_e_desvantagem ? `
+                        <div class="regra-destaque">
+                            ${mecanicas.jogadas_de_ataque.distancia_e_desvantagem.regra}<br>
+                            <strong>Exceção:</strong> ${mecanicas.jogadas_de_ataque.distancia_e_desvantagem.excecao}
+                        </div>
+                    ` : ''}
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    // Regras Especiais
+    if (regras.regras_especiais && regras.regras_especiais.combinando_efeitos) {
+        const combinar = regras.regras_especiais.combinando_efeitos;
+        html += `
+            <div class="regra-secao">
+                <h3 class="regra-titulo">${combinar.titulo}</h3>
+                ${combinar.magias_diferentes ? `<p class="regra-texto"><strong>Magias Diferentes:</strong> ${combinar.magias_diferentes}</p>` : ''}
+                ${combinar.magias_iguais ? `
+                    <p class="regra-texto"><strong>Magias Iguais:</strong></p>
+                    <div class="regra-destaque">
+                        ${combinar.magias_iguais.regra}<br>
+                        <strong>Aplicação:</strong> ${combinar.magias_iguais.aplicacao}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    regrasConteudo.innerHTML = html;
+}
+
+// ========== MOSTRAR TOOLTIP DE REGRA ESPECÍFICA ==========
+function mostrarRegraTooltip(tipo) {
+    if (!regras) return;
+    
+    let titulo = '';
+    let conteudo = '';
+    
+    switch(tipo) {
+        case 'tempo':
+            titulo = 'Tempo de Conjuração';
+            if (regras.conjuracao && regras.conjuracao.tempos_de_conjuracao) {
+                const tempos = regras.conjuracao.tempos_de_conjuracao;
+                conteudo = `
+                    <div class="tooltip-secao">
+                        <p><strong>Ação Simples:</strong> ${tempos.acao_simples || 'Padrão'}</p>
+                    </div>
+                    ${tempos.acao_bonus ? `
+                        <div class="tooltip-secao">
+                            <p class="tooltip-subtitulo">Ação Bônus:</p>
+                            <p>${tempos.acao_bonus.regra}</p>
+                            <div class="tooltip-destaque">⚠️ ${tempos.acao_bonus.restricao}</div>
+                        </div>
+                    ` : ''}
+                    ${tempos.reacoes ? `
+                        <div class="tooltip-secao">
+                            <p><strong>Reações:</strong> ${tempos.reacoes}</p>
+                        </div>
+                    ` : ''}
+                    ${tempos.rituais_e_tempos_maiores ? `
+                        <div class="tooltip-secao">
+                            <p class="tooltip-subtitulo">Rituais:</p>
+                            <ul class="tooltip-lista">
+                                <li>${tempos.rituais_e_tempos_maiores.exigencia}</li>
+                                <li>${tempos.rituais_e_tempos_maiores.falha}</li>
+                            </ul>
+                        </div>
+                    ` : ''}
+                `;
+            }
+            break;
+            
+        case 'duracao':
+            titulo = 'Duração';
+            if (regras.duracao) {
+                const duracao = regras.duracao;
+                conteudo = `
+                    ${duracao.instantanea ? `
+                        <div class="tooltip-secao">
+                            <p><strong>Instantânea:</strong> ${duracao.instantanea}</p>
+                        </div>
+                    ` : ''}
+                    ${duracao.concentracao ? `
+                        <div class="tooltip-secao">
+                            <p class="tooltip-subtitulo">Concentração - Você perde se:</p>
+                            <ul class="tooltip-lista">
+                                ${duracao.concentracao.perda_de_concentracao.nova_magia ? `<li>${duracao.concentracao.perda_de_concentracao.nova_magia}</li>` : ''}
+                                ${duracao.concentracao.perda_de_concentracao.sofrer_dano ? `<li>${duracao.concentracao.perda_de_concentracao.sofrer_dano}</li>` : ''}
+                                ${duracao.concentracao.perda_de_concentracao.estado ? `<li>${duracao.concentracao.perda_de_concentracao.estado}</li>` : ''}
+                                ${duracao.concentracao.perda_de_concentracao.voluntario ? `<li>${duracao.concentracao.perda_de_concentracao.voluntario}</li>` : ''}
+                            </ul>
+                        </div>
+                    ` : ''}
+                `;
+            }
+            break;
+            
+        case 'componentes':
+            titulo = 'Componentes';
+            if (regras.componentes && regras.componentes.tipos) {
+                const tipos = regras.componentes.tipos;
+                conteudo = `
+                    ${tipos.verbal ? `
+                        <div class="tooltip-secao">
+                            <p class="tooltip-subtitulo">Verbal (${tipos.verbal.sigla}):</p>
+                            <p>${tipos.verbal.acao}</p>
+                            ${tipos.verbal.impedimento ? `<div class="tooltip-destaque">⚠️ ${tipos.verbal.impedimento}</div>` : ''}
+                        </div>
+                    ` : ''}
+                    ${tipos.somatico ? `
+                        <div class="tooltip-secao">
+                            <p class="tooltip-subtitulo">Somático (${tipos.somatico.sigla}):</p>
+                            <p>${tipos.somatico.acao}</p>
+                            ${tipos.somatico.requisito ? `<div class="tooltip-destaque">📋 ${tipos.somatico.requisito}</div>` : ''}
+                        </div>
+                    ` : ''}
+                    ${tipos.material ? `
+                        <div class="tooltip-secao">
+                            <p class="tooltip-subtitulo">Material (${tipos.material.sigla}):</p>
+                            <p>${tipos.material.acao}</p>
+                            <ul class="tooltip-lista">
+                                <li>${tipos.material.foco_ou_bolsa}</li>
+                                <li>${tipos.material.custo_ouro}</li>
+                                <li>${tipos.material.consumo}</li>
+                                <li>${tipos.material.uso_maos}</li>
+                            </ul>
+                        </div>
+                    ` : ''}
+                `;
+            }
+            break;
+            
+        case 'alcance':
+            titulo = 'Alcance e Ataques';
+            if (regras.mecanicas_de_acerto && regras.mecanicas_de_acerto.jogadas_de_ataque) {
+                const ataque = regras.mecanicas_de_acerto.jogadas_de_ataque;
+                conteudo = `
+                    <div class="tooltip-secao">
+                        <p class="tooltip-subtitulo">Jogadas de Ataque Mágico:</p>
+                        <div class="tooltip-destaque">Ataque = ${ataque.formula_ataque}</div>
+                    </div>
+                    ${ataque.distancia_e_desvantagem ? `
+                        <div class="tooltip-secao">
+                            <p><strong>Distância e Desvantagem:</strong></p>
+                            <p>${ataque.distancia_e_desvantagem.regra}</p>
+                            <p><em>Exceção: ${ataque.distancia_e_desvantagem.excecao}</em></p>
+                        </div>
+                    ` : ''}
+                `;
+            }
+            break;
+    }
+    
+    if (conteudo) {
+        tooltipTitulo.textContent = titulo;
+        tooltipConteudo.innerHTML = conteudo;
+        modalTooltip.classList.add('ativo');
+    }
+}
+
 // ========== MODAL ==========
 function abrirModal() {
     magiasSelecionadasModal = [];
@@ -347,6 +634,19 @@ function fecharModal() {
     modal.classList.remove('ativo');
     magiasSelecionadasModal = [];
     atualizarContadorSelecionadas();
+}
+
+function abrirModalRegras() {
+    exibirRegrasCompletas();
+    modalRegras.classList.add('ativo');
+}
+
+function fecharModalRegras() {
+    modalRegras.classList.remove('ativo');
+}
+
+function fecharTooltip() {
+    modalTooltip.classList.remove('ativo');
 }
 
 // ========== MODAL DE CONFIRMAÇÃO ==========
@@ -466,8 +766,21 @@ btnFecharModal.addEventListener('click', fecharModal);
 btnCancelar.addEventListener('click', fecharModal);
 btnSalvarSelecionadas.addEventListener('click', salvarMagiasSelecionadas);
 
+// Modal Regras
+btnRegras.addEventListener('click', abrirModalRegras);
+btnFecharModalRegras.addEventListener('click', fecharModalRegras);
+btnFecharTooltip.addEventListener('click', fecharTooltip);
+
 modal.addEventListener('click', (e) => {
     if (e.target === modal) fecharModal();
+});
+
+modalRegras.addEventListener('click', (e) => {
+    if (e.target === modalRegras) fecharModalRegras();
+});
+
+modalTooltip.addEventListener('click', (e) => {
+    if (e.target === modalTooltip) fecharTooltip();
 });
 
 // Filtros das magias selecionadas
