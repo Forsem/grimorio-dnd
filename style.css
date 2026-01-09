@@ -713,4 +713,19 @@ body {
     .capa-titulo {
         font-size: 2.5rem;
     }
+
+}
+
+/* Estilo para itens de nível desativados */
+.sub-indice-item.desativado {
+    color: #666;
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+.sub-indice-item.desativado:hover {
+    background: transparent;
+    transform: none;
+    color: #666;
 }
