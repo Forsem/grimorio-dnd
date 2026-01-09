@@ -61,6 +61,7 @@ async function carregarDados() {
         
         console.log('Dados carregados:', todasMagiasDisponiveis.length, 'magias disponíveis');
         console.log('Regras carregadas:', regras);
+        console.log('Estrutura lista por classe:', listaPorClasse);
     } catch (err) {
         console.error("Erro ao carregar JSONs:", err);
         magiasDisponiveis.innerHTML = '<p class="erro-msg">Erro ao carregar magias. Verifique se os arquivos JSON estão no diretório correto.</p>';
@@ -224,14 +225,28 @@ function renderizarMagiasDisponiveis() {
         );
     }
     
-    // Filtrar por classe
+    // CORREÇÃO: Filtrar por classe
     const classeSelecionada = modalClasse.value;
     if (classeSelecionada && listaPorClasse[classeSelecionada]) {
         const magiasClasse = listaPorClasse[classeSelecionada];
-        const nomesMagiasClasse = Object.values(magiasClasse).flat();
-        magiasParaMostrar = magiasParaMostrar.filter(m => 
-            nomesMagiasClasse.includes(m.nome)
-        );
+        
+        // Extrair todos os nomes de magias de todos os níveis da classe
+        // O JSON tem estrutura: { truques_nivel_0: [{nome, escola}, ...], nivel_1: [...], ... }
+        const nomesMagiasClasse = Object.values(magiasClasse)
+            .flat()
+            .map(magiaObj => {
+                // Normalizar o nome para comparação (minúsculas e sem espaços extras)
+                return magiaObj.nome.toLowerCase().trim();
+            });
+        
+        console.log('Magias da classe', classeSelecionada, ':', nomesMagiasClasse.length);
+        
+        magiasParaMostrar = magiasParaMostrar.filter(m => {
+            const nomeNormalizado = m.nome.toLowerCase().trim();
+            return nomesMagiasClasse.includes(nomeNormalizado);
+        });
+        
+        console.log('Magias após filtro de classe:', magiasParaMostrar.length);
     }
     
     // Filtrar por nível
