@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="../utils/logo.png">
+    <title>Grimório D&D 5e</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- GRIMÓRIO FECHADO -->
+    <div class="grimorio-fechado" id="grimorioFechado">
+        <div class="capa-titulo">Grimório</div>
+        <div class="capa-ornamento">
+            <svg viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M100,30 L100,170 M30,100 L170,100" stroke="currentColor" stroke-width="2"/>
+                <circle cx="100" cy="100" r="50" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M70,70 L130,130 M130,70 L70,130" stroke="currentColor" stroke-width="2"/>
+            </svg>
+        </div>
+        <div class="capa-subtitulo">D&D 5ª Edição</div>
+        <div class="capa-instrucao">Clique para abrir</div>
+    </div>
+
+    <!-- GRIMÓRIO ABERTO -->
+    <div class="grimorio-aberto" id="grimorioAberto">
+        <div class="livro-container">
+            <button class="btn-fechar" id="btnFechar">✕ Fechar</button>
+            
+            <div class="livro">
+                <!-- PÁGINA ESQUERDA -->
+                <div class="pagina pagina-esquerda" id="paginaEsquerda">
+                    <!-- ÍNDICE -->
+                    <div id="indice">
+                        <h2 class="indice-titulo">Índice de Magias</h2>
+                        <ul class="indice-lista">
+                            <li class="indice-item" data-classe="bardo">Bardo</li>
+                            <li class="indice-item" data-classe="bruxo">Bruxo</li>
+                            <li class="indice-item" data-classe="clerigo">Clérigo</li>
+                            <li class="indice-item" data-classe="druida">Druida</li>
+                            <li class="indice-item" data-classe="feiticeiro">Feiticeiro</li>
+                            <li class="indice-item" data-classe="mago">Mago</li>
+                            <li class="indice-item" data-classe="paladino">Paladino</li>
+                            <li class="indice-item" data-classe="patrulheiro">Patrulheiro</li>
+
+                            <br>
+                            <a href="spell_sheet.html" style="text-decoration: none;">
+                                <li class="indice-item">Minha Spell Sheet</li>
+                            </a>
+                        </ul>
+                    </div>
+
+                    
+
+                    <!-- SUB-ÍNDICE DE NÍVEIS -->
+                    <div id="subIndice" class="sub-indice">
+                        <button class="btn-voltar" id="btnVoltarIndice">← Voltar ao Índice</button>
+                        <h3 class="indice-titulo" style="font-size: 1.8rem;" id="classeAtual"></h3>
+                        <ul class="indice-lista" id="listaNiveis"></ul>
+                    </div>
+
+                    <!-- CONTEÚDO DE MAGIAS -->
+                    <div id="conteudoMagias" class="conteudo-magias"></div>
+
+                    <div class="numero-pagina">1</div>
+                </div>
+
+                <!-- LOMBADA -->
+                <div class="lombada">
+                    <div class="marcadores">
+                        <div class="marcador"></div>
+                        <div class="marcador" style="background: linear-gradient(to bottom, #1a5d8b, #0f3a5d);"></div>
+                        <div class="marcador" style="background: linear-gradient(to bottom, #2d8b1a, #1a5d0f);"></div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA DIREITA -->
+                <div class="pagina pagina-direita" id="paginaDireita">
+                    <div id="conteudoDireita"></div>
+                    <div class="numero-pagina">2</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

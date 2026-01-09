@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../utils/logo.png">
+    <title>Spell Sheet - D&D 5e</title>
+    <link rel="stylesheet" href="spell_sheet_style.css">
+</head>
+<body>
+    <!-- LIVRO FECHADO -->
+    <div class="livro-fechado" id="livroFechado">
+        <div class="capa-conteudo">
+            <div class="capa-titulo">SPELL SHEET</div>
+            <div class="capa-simbolo">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#ffed4e;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#d4af37;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="100" cy="100" r="90" fill="none" stroke="url(#goldGradient)" stroke-width="3"/>
+                    <path d="M100,20 L120,80 L180,85 L130,120 L145,180 L100,145 L55,180 L70,120 L20,85 L80,80 Z" 
+                          fill="none" stroke="url(#goldGradient)" stroke-width="2.5"/>
+                    <circle cx="100" cy="100" r="50" fill="none" stroke="url(#goldGradient)" stroke-width="2"/>
+                    <text x="100" y="110" font-family="serif" font-size="40" fill="url(#goldGradient)" 
+                          text-anchor="middle" font-weight="bold">✦</text>
+                </svg>
+            </div>
+            <div class="capa-subtitulo">Minhas Magias</div>
+        </div>
+        <div class="capa-instrucao">✦ Clique para abrir ✦</div>
+    </div>
+
+    <!-- LIVRO ABERTO -->
+    <div class="livro-aberto" id="livroAberto">
+        <!-- Cabeçalho -->
+        <div class="header">
+            <div class="personagem-info">
+                <input type="text" id="nomePersonagem" placeholder="Nome do Personagem" class="input-personagem">
+                <input type="text" id="classePersonagem" placeholder="Classe" class="input-classe">
+                <input type="number" id="nivelPersonagem" placeholder="Nível" class="input-nivel" min="1" max="20">
+            </div>
+            <div class="acoes">
+                <button class="btn btn-adicionar" id="btnAdicionar">+ Adicionar Magia</button>
+                <a href="index.html" style="text-decoration: none;">
+                    <button class="btn btn-grimorio">📖 Voltar ao Grimório</button>
+                </a>
+                <button class="btn btn-fechar" id="btnFechar">✕ Fechar</button>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="controles">
+            <div class="filtro-grupo">
+                <label>Buscar</label>
+                <input type="text" id="buscarMagia" placeholder="Nome da magia...">
+            </div>
+            <div class="filtro-grupo">
+                <label>Nível</label>
+                <select id="filtroNivel">
+                    <option value="">Todos</option>
+                    <option value="0">Truques</option>
+                    <option value="1">Nível 1</option>
+                    <option value="2">Nível 2</option>
+                    <option value="3">Nível 3</option>
+                    <option value="4">Nível 4</option>
+                    <option value="5">Nível 5</option>
+                    <option value="6">Nível 6</option>
+                    <option value="7">Nível 7</option>
+                    <option value="8">Nível 8</option>
+                    <option value="9">Nível 9</option>
+                </select>
+            </div>
+            <div class="filtro-grupo">
+                <label>Escola</label>
+                <select id="filtroEscola">
+                    <option value="">Todas</option>
+                    <option value="Abjuração">Abjuração</option>
+                    <option value="Adivinhação">Adivinhação</option>
+                    <option value="Conjuração">Conjuração</option>
+                    <option value="Encantamento">Encantamento</option>
+                    <option value="Evocação">Evocação</option>
+                    <option value="Ilusão">Ilusão</option>
+                    <option value="Necromancia">Necromancia</option>
+                    <option value="Transmutação">Transmutação</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Grid de Magias -->
+        <div class="magias-grid" id="magiasGrid">
+            <div class="mensagem-vazia">
+                <p>Sua folha de magias está em branco.</p>
+                <p>Clique em "Adicionar Magia" para começar!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Adicionar Magia -->
+    <div class="modal" id="modal">
+        <div class="modal-conteudo-grande">
+            <div class="modal-header">
+                <h2 class="modal-titulo">Adicionar Magias do Grimório</h2>
+                <button class="btn-fechar-modal" id="btnFecharModal">×</button>
+            </div>
+            
+            <!-- Filtros do Modal -->
+            <div class="modal-filtros">
+                <div class="filtro-grupo">
+                    <label>Buscar Magia</label>
+                    <input type="text" id="modalBuscar" placeholder="Digite o nome da magia...">
+                </div>
+                <div class="filtro-grupo">
+                    <label>Classe</label>
+                    <select id="modalClasse">
+                        <option value="">Todas as Classes</option>
+                        <option value="bardo">Bardo</option>
+                        <option value="bruxo">Bruxo</option>
+                        <option value="clerigo">Clérigo</option>
+                        <option value="druida">Druida</option>
+                        <option value="feiticeiro">Feiticeiro</option>
+                        <option value="mago">Mago</option>
+                        <option value="paladino">Paladino</option>
+                        <option value="patrulheiro">Patrulheiro</option>
+                    </select>
+                </div>
+                <div class="filtro-grupo">
+                    <label>Nível</label>
+                    <select id="modalNivel">
+                        <option value="">Todos os Níveis</option>
+                        <option value="truques_nivel_0">Truques (Nível 0)</option>
+                        <option value="nivel_1">Nível 1</option>
+                        <option value="nivel_2">Nível 2</option>
+                        <option value="nivel_3">Nível 3</option>
+                        <option value="nivel_4">Nível 4</option>
+                        <option value="nivel_5">Nível 5</option>
+                        <option value="nivel_6">Nível 6</option>
+                        <option value="nivel_7">Nível 7</option>
+                        <option value="nivel_8">Nível 8</option>
+                        <option value="nivel_9">Nível 9</option>
+                    </select>
+                </div>
+                <div class="filtro-grupo">
+                    <label>Escola</label>
+                    <select id="modalEscola">
+                        <option value="">Todas as Escolas</option>
+                        <option value="abjuração">Abjuração</option>
+                        <option value="adivinhação">Adivinhação</option>
+                        <option value="conjuração">Conjuração</option>
+                        <option value="encantamento">Encantamento</option>
+                        <option value="evocação">Evocação</option>
+                        <option value="ilusão">Ilusão</option>
+                        <option value="necromancia">Necromancia</option>
+                        <option value="transmutação">Transmutação</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Lista de Magias Disponíveis -->
+            <div class="magias-disponiveis" id="magiasDisponiveis">
+                <p class="loading-msg">Carregando magias...</p>
+            </div>
+
+            <!-- Botões do Modal -->
+            <div class="modal-acoes">
+                <button class="btn btn-cancelar" id="btnCancelar">Cancelar</button>
+                <button class="btn btn-salvar" id="btnSalvarSelecionadas">
+                    Adicionar Selecionadas (<span id="contadorSelecionadas">0</span>)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div class="modal-confirmacao" id="modalConfirmacao">
+        <div class="confirmacao-box">
+            <div class="confirmacao-icone">✓</div>
+            <div class="confirmacao-titulo">Magias Adicionadas!</div>
+            <div class="confirmacao-texto">
+                <span id="numeroMagias">0</span> magia(s) adicionada(s) com sucesso à sua spell sheet.
+            </div>
+            <button class="btn-confirmacao-ok" id="btnConfirmacaoOk">OK</button>
+        </div>
+    </div>
+
+    <script src="spell_sheet_script.js"></script>
+</body>
+</html>
