@@ -68,16 +68,24 @@ function mostrarSubIndice(classe) {
             { key: 'nivel_9', label: 'Nível 9' }
         ];
         
-        listaNiveis.innerHTML = niveis.map(n => 
-            `<li class="sub-indice-item" data-nivel="${n.key}" data-classe="${classe}">${n.label}</li>`
-        ).join('');
+        // Verificar quais níveis existem para a classe
+        const dadosDaClasse = listaPorClasse[classe];
+        
+        listaNiveis.innerHTML = niveis.map(n => {
+            const existe = dadosDaClasse && dadosDaClasse[n.key];
+            const classDesativado = existe ? '' : ' desativado';
+            return `<li class="sub-indice-item${classDesativado}" data-nivel="${n.key}" data-classe="${classe}">${n.label}</li>`;
+        }).join('');
         
         listaNiveis.querySelectorAll('.sub-indice-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const nivel = item.dataset.nivel;
-                const cls = item.dataset.classe;
-                mostrarMagias(cls, nivel);
-            });
+            // Só adiciona evento de clique se não estiver desativado
+            if (!item.classList.contains('desativado')) {
+                item.addEventListener('click', () => {
+                    const nivel = item.dataset.nivel;
+                    const cls = item.dataset.classe;
+                    mostrarMagias(cls, nivel);
+                });
+            }
         });
     });
 }
